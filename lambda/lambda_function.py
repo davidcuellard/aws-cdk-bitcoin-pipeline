@@ -78,9 +78,10 @@ def handler(event, context):
             def ts_for_index(i: int) -> datetime:
                 if interval == "1w":
                     return start_ts + timedelta(weeks=i)
-                if interval == "4h":
+                elif interval == "4h":
                     return start_ts + timedelta(hours=i * 4)
-                return start_ts + timedelta(days=i)
+                else:  # 1d
+                    return start_ts + timedelta(days=i)
 
             for i in range(points):
                 point_ts = ts_for_index(i)
@@ -282,9 +283,9 @@ def handler(event, context):
         total_days = (end_of_history - start_of_history).days
         total_hours = total_days * 24
         datasets = {
-            "1w": {"interval": "1w", "points": total_days // 7, "description": f"Weekly data ({total_days // 7} points)"},
-            "4h": {"interval": "4h", "points": total_hours // 4, "description": f"4-hourly data ({total_hours // 4} points)"},
-            "1d": {"interval": "1d", "points": total_days, "description": f"Daily data ({total_days} points)"},
+            "1w": {"interval": "1w", "points": max(1, total_days // 7), "description": f"Weekly data ({max(1, total_days // 7)} points)"},
+            "4h": {"interval": "4h", "points": max(1, total_hours // 4), "description": f"4-hourly data ({max(1, total_hours // 4)} points)"},
+            "1d": {"interval": "1d", "points": max(1, total_days), "description": f"Daily data ({max(1, total_days)} points)"},
         }
 
         for _, cfg in datasets.items():
